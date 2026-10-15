@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "prisma generate && prisma migrate deploy && next build",
-    "start": "next start -p ${PORT:-3000}",
+    "start": "next start -H 0.0.0.0",
     "tunnel": "ssh -o ServerAliveInterval=15 -R 80:localhost:3000 nokey@localhost.run",
     "lint": "eslint",
     "db:migrate": "prisma migrate dev",
