@@ -33,14 +33,19 @@ export async function GET(request: Request, { params }: Params) {
         new Date(r.createdAt).toISOString(),
         ...survey.questions.map((q) =>
           escapeCsv(
-            formatAnswerDisplay(q.type, answers[q.id], parseOptions(q.options))
+            formatAnswerDisplay(
+              q.type,
+              answers[q.id],
+              parseOptions(q.options),
+              true
+            )
           )
         ),
         escapeCsv(r.userAgent || ""),
       ];
     });
     const csv = [header.map(escapeCsv).join(","), ...rows.map((r) => r.join(","))].join(
-      "\n"
+      "\r\n"
     );
     const bom = "\uFEFF";
     return new NextResponse(bom + csv, {
@@ -71,8 +76,6 @@ export async function GET(request: Request, { params }: Params) {
 }
 
 function escapeCsv(value: string): string {
-  if (/[",\n]/.test(value)) {
-    return `"${value.replace(/"/g, '""')}"`;
-  }
-  return value;
+  // Always quote so Excel/WPS keeps values as text (avoids 5/5 → date)
+  return `"${String(value).replace(/"/g, '""')}"`;
 }

@@ -65,11 +65,16 @@ export function validateAnswers(
 export function formatAnswerDisplay(
   type: string,
   value: unknown,
-  _options: string[] = []
+  _options: string[] = [],
+  forCsv = false
 ): string {
   if (value === undefined || value === null || value === "") return "—";
   if (type === "multiple" && Array.isArray(value)) return value.join("、");
-  if (type === "rating") return `${value} / 5`;
+  // Avoid "5 / 5" in CSV — Excel/WPS treats it as a date (5月5日)
+  if (type === "rating") {
+    const n = Number(value);
+    return forCsv ? `${n}分` : `${n} / 5`;
+  }
   if (typeof value === "string") return value;
   return String(value);
 }
